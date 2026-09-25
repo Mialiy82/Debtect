@@ -1,0 +1,1 @@
+"""Score hotspot (F4) — PUR. score = complexite x churn."""

@@ -1,0 +1,1 @@
+"""Tests unitaires — à remplir en Vérification/Validation. Jamais de disque/git ici."""

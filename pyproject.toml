@@ -1,0 +1,12 @@
+[project]
+name = "debtect"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = ["tree-sitter", "tree-sitter-php"]
+
+[project.scripts]
+codevitals = "codevitals.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"

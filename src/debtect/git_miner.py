@@ -1,0 +1,1 @@
+"""Extraction du churn Git (F3) — IMPUR. Un seul appel global à l'historique."""

@@ -1,0 +1,1 @@
+"""Calcul de la complexité cyclomatique (F2) — module PUR. Entrée : un AST, jamais un chemin."""

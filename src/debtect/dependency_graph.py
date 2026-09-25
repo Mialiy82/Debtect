@@ -1,0 +1,1 @@
+"""Graphe de dépendances et analyse d'impact (F9) — PUR. use/extends/implements + BFS/DFS."""

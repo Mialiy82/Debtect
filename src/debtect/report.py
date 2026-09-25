@@ -1,0 +1,1 @@
+"""Assemblage du résultat final (F5) — PUR. N'écrit rien sur disque (rôle du CLI)."""

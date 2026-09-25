@@ -1,0 +1,1 @@
+"""Parsing PHP via tree-sitter-php (F1). Lecture disque = impur, construction AST = pur."""

@@ -1,0 +1,1 @@
+"""Couplage temporel (F6) — PUR. Co-modification entre fichiers à partir des commits."""

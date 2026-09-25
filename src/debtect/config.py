@@ -1,0 +1,1 @@
+"""Chargement de la configuration (IMPUR). Exclusions par défaut + .codevitalsignore."""
