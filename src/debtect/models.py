@@ -12,9 +12,9 @@ class FunctionInfo:
 @dataclass
 class FileAnalysis:
   chemin: str
-  ligne: int
+  lignes_code: int
   fonctions: list[FunctionInfo]
-  complexite: int
+  complexite_totale: int
   churn: int
   score_hotspot: float
   erreur_parsing: str | None
@@ -22,7 +22,7 @@ class FileAnalysis:
 
 @dataclass
 class AnalysisResult:
-  chemin_proj: str
+  chemin_projet: str
   date_analyse: str
   duree: float
   fichiers: list[FileAnalysis]
