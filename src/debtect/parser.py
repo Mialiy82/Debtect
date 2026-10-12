@@ -15,6 +15,6 @@ def parser(chemin: str):
 
   tree = _parser.parse(code)
   if tree.root_node.has_error:
-    raise Erreur(f"Erreur de parsing pour le fichier: {chemin}")
+    raise ErreurParsing(f"Erreur de parsing pour le fichier: {chemin}")
   
   return tree.root_node
