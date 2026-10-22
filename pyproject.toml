@@ -2,7 +2,7 @@
 name = "debtect"
 version = "0.1.0"
 requires-python = ">=3.10"
-dependencies = ["tree-sitter", "tree-sitter-php"]
+dependencies = ["tree-sitter", "tree-sitter-php", "pathspec"]
 
 [project.scripts]
 codevitals = "codevitals.cli:main"

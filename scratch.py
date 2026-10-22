@@ -1,24 +1,51 @@
 
 import time
 from pathlib import Path
+import os
 
 from debtect.git_miner import churn
 from debtect.parser import parser, ErreurParsing
 from debtect.complexity import calculer
 from debtect.hotspot import score
-
+from debtect.config import charger, est_exclu, peut_elaguer
 
 racine = Path(r"D:\Study\ProjFinAnnée\Test_PHP\akaunting")
 
 churn_dict = churn(str(racine))
 
-exclusions = {"vendor", "node_modules", ".git", "storage"}
 
-fichiers = [
-    chemin
-    for chemin in racine.rglob("*.php")
-    if not any(partie in exclusions for partie in chemin.relative_to(racine).parts)
-]
+spec = charger(str(racine))
+
+elagage_autorise = peut_elaguer(spec)
+
+fichiers = []
+
+for dossier, sous_dossiers, noms_fichiers in os.walk(racine, topdown=True):
+    chemin_dossier = Path(dossier)
+
+    # Sans négation, on peut ignorer les dossiers exclus
+    # avant de parcourir leur contenu.
+    if elagage_autorise:
+        sous_dossiers[:] = [
+            nom
+            for nom in sous_dossiers
+            if not est_exclu(
+                spec,
+                (chemin_dossier / nom).relative_to(racine).as_posix() + "/",
+            )
+        ]
+
+    for nom in noms_fichiers:
+        if not nom.endswith(".php"):
+            continue
+
+        chemin = chemin_dossier / nom
+        chemin_relatif = chemin.relative_to(racine).as_posix()
+
+        if not est_exclu(spec, chemin_relatif):
+            fichiers.append(chemin)
+
+
 
 print("Fichiers PHP à analyser :", len(fichiers))
 print("Chemins historiques dans churn :", len(churn_dict))
@@ -29,16 +56,25 @@ echecs = []
 
 debut = time.perf_counter()
 
+temps_parsing = 0.0
+temps_calcul = 0.0
+
 for chemin in fichiers:
     cle = chemin.relative_to(racine).as_posix()
 
+    debut_parsing = time.perf_counter()
     try:
         ast = parser(str(chemin))
     except ErreurParsing:
         echecs.append(cle)
         continue
+    finally:
+        temps_parsing += time.perf_counter() - debut_parsing
 
+    debut_calcul = time.perf_counter()
     fonctions = calculer(ast)
+    temps_calcul += time.perf_counter() - debut_calcul
+
     complexites = [fonction.complexite for fonction in fonctions]
 
     somme = sum(complexites)
@@ -56,6 +92,8 @@ print(
     "Fichiers sans commits historiques :",
     sum(1 for _, _, _, commits in resultats if commits == 0),
 )
+print("Temps parsing :", round(temps_parsing, 2), "secondes")
+print("Temps calcul :", round(temps_calcul, 2), "secondes")
 
 # Classement selon la somme des complexités
 classement_somme = sorted(
