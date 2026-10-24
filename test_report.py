@@ -8,12 +8,11 @@ from debtect.report import construire, vers_json
 def creer_fichier(chemin: str, score: float) -> FileAnalysis:
     return FileAnalysis(
         chemin=chemin,
-        lignes_code=0,
+        nb_lignes=0,
         fonctions=[],
         complexite_totale=0,
         churn=0,
         score_hotspot=score,
-        erreur_parsing=None,
         dependances=[],
     )
 
@@ -61,5 +60,4 @@ fichier_test = next(
 )
 
 print("\nChemin avec accent :", fichier_test["chemin"])
-print("Erreur de parsing :", fichier_test["erreur_parsing"])
 print("Clés de FileAnalysis :", list(fichier_test.keys()))

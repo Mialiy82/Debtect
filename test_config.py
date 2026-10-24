@@ -1,7 +1,6 @@
 from debtect.config import (DEFAULT_MOTIFS, _construire, est_exclu)
 
 spec = _construire(DEFAULT_MOTIFS)
-
 chemins = [
     "vendor/a.php",
     "app/vendor/a.php",
@@ -24,7 +23,6 @@ print(
     "overrides/x.php ->",
     est_exclu(spec_personnalise, "overrides/x.php"),
 )
-
 print(
     "storage/app/x.php ->",
     est_exclu(spec_personnalise, "storage/app/x.php"),

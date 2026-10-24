@@ -17,18 +17,27 @@ def _compter(texte: str) -> dict:
   return dict(Counter(fichiers))
 
 def churn(repo: str) -> dict:
-  if not Path(repo).is_dir():
+  chemin_repo = Path(repo).resolve()
+  if not chemin_repo.is_dir():
     raise ErreurGit(f"Le chemin dépot n'existe pas ou n'est pas un dossier: {repo}")
   try:
+    verification = subprocess.run(["git", "rev-parse", "--show-toplevel"], 
+                                  cwd=chemin_repo, capture_output=True, 
+                                  encoding="utf-8", check=True)
+    racine_git = Path(verification.stdout.strip()).resolve()
+    if racine_git != chemin_repo:
+      raise ErreurGit(f"Le dossier fourni n'est pas la racine d'un dépôt Git : {repo}")
     resultat = subprocess.run(
       ["git", "-c", "core.quotepath=false", "log",
       "--name-only", "--pretty=format:", "--", "*.php",
       ],
-      cwd=repo,
+      cwd=chemin_repo,
       capture_output=True,
       encoding="utf-8",
       check=True,
       )
+  except ErreurGit:
+    raise
   except subprocess.CalledProcessError as e:
     raise ErreurGit(f"Echec de Git dans le repo: {repo} : {e.stderr}") from e
   except FileNotFoundError as e: 

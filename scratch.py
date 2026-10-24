@@ -24,7 +24,6 @@ for dossier, sous_dossiers, noms_fichiers in os.walk(racine, topdown=True):
     chemin_dossier = Path(dossier)
 
     # Sans négation, on peut ignorer les dossiers exclus
-    # avant de parcourir leur contenu.
     if elagage_autorise:
         sous_dossiers[:] = [
             nom

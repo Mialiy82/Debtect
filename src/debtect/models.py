@@ -12,12 +12,11 @@ class FunctionInfo:
 @dataclass
 class FileAnalysis:
   chemin: str
-  lignes_code: int
+  nb_lignes: int
   fonctions: list[FunctionInfo]
   complexite_totale: int
   churn: int
   score_hotspot: float
-  erreur_parsing: str | None
   dependances: list[str]
 
 @dataclass
