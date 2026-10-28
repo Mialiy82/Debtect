@@ -19,11 +19,14 @@ from debtect.parser import parser, ErreurParsing
 from debtect.git_miner import churn, ErreurGit
 from debtect.report import construire, vers_json
 
+def _signaler_erreur_parcours(erreur: OSError) -> None:
+    raise erreur
+
 def _decouvrir_fichiers(racine: Path, spec) -> list[Path]:
     fichiers = []
     elagage_autorise = peut_elaguer(spec)
 
-    for dossier, sous_dossiers, noms_fichiers in os.walk(racine, topdown=True):
+    for dossier, sous_dossiers, noms_fichiers in os.walk(racine, topdown=True, onerror=_signaler_erreur_parcours):
         chemin_dossier = Path(dossier)
 
         if elagage_autorise:
@@ -89,10 +92,10 @@ def main(argv=None) -> int:
         except (ErreurParsing, OSError) as erreur:
             chemin_relatif = chemin.relative_to(racine).as_posix()
             fichiers_echec.append(chemin_relatif)
-            print(f"Avertissement : impossible d'analyser" f"{chemin_relatif} : {erreur}", file=sys.stderr,)
+            print(f"Avertissement : impossible d'analyser " f"{chemin_relatif} : {erreur}", file=sys.stderr,)
 
         if numero % 500 == 0 :
-            print(f"Progression : {numero}/{len(fichiers)} fihiers traités", file=sys.stderr,)
+            print(f"Progression : {numero}/{len(fichiers)} fichiers traités", file=sys.stderr,)
 
     duree = time.perf_counter() - debut
     date_analyse = datetime.now().isoformat(timespec="seconds")
@@ -107,8 +110,8 @@ def main(argv=None) -> int:
         return 1
 
     print(f"Fichiers PHP découverts : {len(fichiers)}")
-    print(f"Ficiers analysés avec succés : {len(analyses)}")
-    print(f"Fichiers en echecs : {len(fichiers_echec)}")
+    print(f"Fichiers analysés avec succès : {len(analyses)}")
+    print(f"Fichiers en échec : {len(fichiers_echec)}")
     print(f"Durée : {duree:.2f} secondes")
     print(f"Rapport JSON : {chemin_sortie.resolve()}")
 
