@@ -1,11 +1,8 @@
-
 from pathlib import Path
 
 from debtect.config import charger, est_exclu
 
-racine = Path(
-    r"D:\Study\ProjFinAnnée\Test_PHP\akaunting"
-)
+racine = Path(r"D:\Study\ProjFinAnnée\Test_PHP\akaunting")
 
 spec = charger(str(racine))
 

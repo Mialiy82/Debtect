@@ -1,9 +1,7 @@
-
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from debtect.config import charger, est_exclu
-
 
 # Test A : aucun fichier .debtectignore
 with TemporaryDirectory() as dossier:

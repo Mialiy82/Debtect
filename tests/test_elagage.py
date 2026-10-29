@@ -1,4 +1,3 @@
-
 import os
 from pathlib import Path
 
@@ -9,17 +8,13 @@ racine = Path(r"D:\Study\ProjFinAnnée\Test_PHP\akaunting")
 spec = charger(str(racine))
 
 if not peut_elaguer(spec):
-    raise RuntimeError(
-        "L'élagage est désactivé. Vérifie le fichier .debtectignore."
-    )
+    raise RuntimeError("L'élagage est désactivé. Vérifie le fichier .debtectignore.")
 
 
 def decouvrir_fichiers(elagage: bool) -> set[str]:
     fichiers = set()
 
-    for dossier, sous_dossiers, noms_fichiers in os.walk(
-        racine, topdown=True
-    ):
+    for dossier, sous_dossiers, noms_fichiers in os.walk(racine, topdown=True):
         chemin_dossier = Path(dossier)
 
         if elagage:
@@ -28,9 +23,7 @@ def decouvrir_fichiers(elagage: bool) -> set[str]:
                 for nom in sous_dossiers
                 if not est_exclu(
                     spec,
-                    (
-                        chemin_dossier / nom
-                    ).relative_to(racine).as_posix() + "/",
+                    (chemin_dossier / nom).relative_to(racine).as_posix() + "/",
                 )
             ]
 

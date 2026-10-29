@@ -1,4 +1,3 @@
-
 import time
 from pathlib import Path
 import os
@@ -43,7 +42,6 @@ for dossier, sous_dossiers, noms_fichiers in os.walk(racine, topdown=True):
 
         if not est_exclu(spec, chemin_relatif):
             fichiers.append(chemin)
-
 
 
 print("Fichiers PHP à analyser :", len(fichiers))
@@ -114,9 +112,7 @@ def afficher_classement(titre, classement, utiliser_maximum=False):
     print(f"\n{titre}")
     print("-" * len(titre))
 
-    for rang, (chemin, somme, maximum, commits) in enumerate(
-        classement, start=1
-    ):
+    for rang, (chemin, somme, maximum, commits) in enumerate(classement, start=1):
         complexite = maximum if utiliser_maximum else somme
         score_fichier = score(complexite, commits)
 

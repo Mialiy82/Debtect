@@ -1,7 +1,7 @@
 {
   "chemin_projet": "D:\\Study\\ProjFinAnnée\\Test_PHP\\akaunting",
-  "date_analyse": "2026-10-23T10:35:01",
-  "duree": 133.64522080001188,
+  "date_analyse": "2026-10-29T12:44:46",
+  "duree": 4.690117700025439,
   "fichiers": [
     {
       "chemin": "app/Models/Document/Document.php",

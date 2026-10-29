@@ -1,4 +1,4 @@
-from debtect.config import (DEFAULT_MOTIFS, _construire, est_exclu)
+from debtect.config import DEFAULT_MOTIFS, _construire, est_exclu
 
 spec = _construire(DEFAULT_MOTIFS)
 chemins = [

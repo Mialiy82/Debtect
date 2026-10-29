@@ -1,12 +1,9 @@
-
 from pathlib import Path
 
 from debtect.cli import _decouvrir_fichiers
 from debtect.config import charger
 
-racine = Path(
-    r"D:\Study\ProjFinAnnée\Test_PHP\akaunting"
-)
+racine = Path(r"D:\Study\ProjFinAnnée\Test_PHP\akaunting")
 
 spec = charger(str(racine))
 fichiers = _decouvrir_fichiers(racine, spec)

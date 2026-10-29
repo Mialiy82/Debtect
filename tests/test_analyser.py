@@ -1,12 +1,9 @@
-
 from pathlib import Path
 
 from debtect.cli import _analyser_fichier
 from debtect.git_miner import churn
 
-racine = Path(
-    r"D:\Study\ProjFinAnnée\Test_PHP\akaunting"
-)
+racine = Path(r"D:\Study\ProjFinAnnée\Test_PHP\akaunting")
 
 chemins = [
     "app/Traits/Modules.php",

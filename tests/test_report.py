@@ -1,4 +1,3 @@
-
 import json
 
 from debtect.models import FileAnalysis
@@ -38,14 +37,14 @@ resultat = construire(
 
 # Étape 1 : tri des fichiers et pureté
 print("Ordre des fichiers :", [f.chemin for f in resultat.fichiers])
-print("Liste fichiers initiale préservée :",
-      [f.chemin for f in fichiers] == ordre_initial)
+print(
+    "Liste fichiers initiale préservée :", [f.chemin for f in fichiers] == ordre_initial
+)
 
 # Vérification du tri et de la pureté des fichiers en échec
 print("Fichiers en échec triés :", resultat.fichiers_echec)
 print("Liste des échecs initiale :", echecs)
-print("Même objet pour les listes d'échecs :",
-      resultat.fichiers_echec is echecs)
+print("Même objet pour les listes d'échecs :", resultat.fichiers_echec is echecs)
 
 # Étape 2 : conversion en JSON
 texte_json = vers_json(resultat)
@@ -54,10 +53,7 @@ print(texte_json)
 
 # Étape 3 : aller-retour JSON
 donnees = json.loads(texte_json)
-fichier_test = next(
-    f for f in donnees["fichiers"]
-    if f["chemin"] == "été.php"
-)
+fichier_test = next(f for f in donnees["fichiers"] if f["chemin"] == "été.php")
 
 print("\nChemin avec accent :", fichier_test["chemin"])
 print("Clés de FileAnalysis :", list(fichier_test.keys()))
