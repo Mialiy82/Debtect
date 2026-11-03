@@ -1,37 +1,45 @@
-from debtect.config import DEFAULT_MOTIFS, _construire, est_exclu
+import pytest
 
-spec = _construire(DEFAULT_MOTIFS)
-chemins = [
-    "vendor/a.php",
-    "app/vendor/a.php",
-    "resources/views/x.blade.php",
-    "tests/Feature/A.php",
-    "app/Models/User.php",
-]
-
-for chemin in chemins:
-    print(chemin, "->", est_exclu(spec, chemin))
-
-motifs_personnalises = DEFAULT_MOTIFS + [
-    "overrides/",
-    "!storage/",
-]
-
-spec_personnalise = _construire(motifs_personnalises)
-
-print(
-    "overrides/x.php ->",
-    est_exclu(spec_personnalise, "overrides/x.php"),
-)
-print(
-    "storage/app/x.php ->",
-    est_exclu(spec_personnalise, "storage/app/x.php"),
+from debtect.config import (
+    DEFAULT_MOTIFS,
+    _construire,
+    est_exclu,
+    peut_elaguer,
 )
 
-chemin_windows = r"app\vendor\a.php"
 
-print(
-    chemin_windows,
-    "->",
-    est_exclu(spec, chemin_windows),
+@pytest.mark.parametrize(
+    ("chemin", "attendu"),
+    [
+        ("vendor/a.php", True),
+        ("app/vendor/a.php", True),
+        ("resources/views/x.blade.php", True),
+        ("tests/Feature/A.php", False),
+        ("app/Models/User.php", False),
+        ("overrides/x.php", True),
+        ("storage/app/x.php", False),
+        (r"app\vendor\a.php", True),
+    ],
 )
+def test_est_exclu(chemin, attendu):
+    motifs = DEFAULT_MOTIFS + [
+        "overrides/",
+        "!storage/",
+    ]
+
+    spec = _construire(motifs)
+
+    assert est_exclu(spec, chemin) is attendu
+
+
+def test_peut_elaguer_avec_motifs_par_defaut():
+    spec = _construire(DEFAULT_MOTIFS)
+
+    assert peut_elaguer(spec) is True
+
+
+def test_peut_elaguer_avec_negation():
+    motifs = DEFAULT_MOTIFS + ["!storage/"]
+    spec = _construire(motifs)
+
+    assert peut_elaguer(spec) is False

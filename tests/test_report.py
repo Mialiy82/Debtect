@@ -1,5 +1,3 @@
-import json
-
 from debtect.models import FileAnalysis
 from debtect.report import construire, vers_json
 
@@ -16,44 +14,87 @@ def creer_fichier(chemin: str, score: float) -> FileAnalysis:
     )
 
 
-fichiers = [
-    creer_fichier("z.php", 10.0),
-    creer_fichier("b.php", 50.0),
-    creer_fichier("a.php", 50.0),
-    creer_fichier("été.php", 25.0),
-]
+def test_tri_score_et_chemin():
+    fichiers = [
+        creer_fichier("z.php", 10.0),
+        creer_fichier("b.php", 50.0),
+        creer_fichier("a.php", 50.0),
+        creer_fichier("c.php", 25.0),
+    ]
 
-ordre_initial = [f.chemin for f in fichiers]
+    resultat = construire(
+        chemin_projet="test",
+        date_analyse="2026-10-14",
+        duree=1.0,
+        fichiers=fichiers,
+        fichiers_echec=[],
+    )
 
-echecs = ["z.php", "a.php", "m.php"]
+    chemins = [f.chemin for f in resultat.fichiers]
 
-resultat = construire(
-    chemin_projet="test",
-    date_analyse="2026-10-14",
-    duree=1.0,
-    fichiers=fichiers,
-    fichiers_echec=echecs,
-)
+    assert chemins == ["a.php", "b.php", "c.php", "z.php"]
 
-# Étape 1 : tri des fichiers et pureté
-print("Ordre des fichiers :", [f.chemin for f in resultat.fichiers])
-print(
-    "Liste fichiers initiale préservée :", [f.chemin for f in fichiers] == ordre_initial
-)
 
-# Vérification du tri et de la pureté des fichiers en échec
-print("Fichiers en échec triés :", resultat.fichiers_echec)
-print("Liste des échecs initiale :", echecs)
-print("Même objet pour les listes d'échecs :", resultat.fichiers_echec is echecs)
+def test_construire_ne_modifie_pas_fichiers():
+    fichiers = [
+        creer_fichier("z.php", 10.0),
+        creer_fichier("a.php", 50.0),
+    ]
 
-# Étape 2 : conversion en JSON
-texte_json = vers_json(resultat)
-print("\nJSON produit :")
-print(texte_json)
+    fichiers_avant = fichiers.copy()
 
-# Étape 3 : aller-retour JSON
-donnees = json.loads(texte_json)
-fichier_test = next(f for f in donnees["fichiers"] if f["chemin"] == "été.php")
+    construire(
+        chemin_projet="test",
+        date_analyse="2026-10-14",
+        duree=1.0,
+        fichiers=fichiers,
+        fichiers_echec=[],
+    )
 
-print("\nChemin avec accent :", fichier_test["chemin"])
-print("Clés de FileAnalysis :", list(fichier_test.keys()))
+    assert fichiers == fichiers_avant
+
+
+def test_construire_copie_fichiers_echec():
+    fichiers_echec = ["z.php", "a.php", "m.php"]
+
+    resultat = construire(
+        chemin_projet="test",
+        date_analyse="2026-10-14",
+        duree=1.0,
+        fichiers=[],
+        fichiers_echec=fichiers_echec,
+    )
+
+    assert resultat.fichiers_echec == ["a.php", "m.php", "z.php"]
+    assert resultat.fichiers_echec is not fichiers_echec
+    assert fichiers_echec == ["z.php", "a.php", "m.php"]
+
+
+def test_json_cles_et_caractere_unicode():
+    fichiers = [creer_fichier("été.php", 25.0)]
+
+    resultat = construire(
+        chemin_projet="test",
+        date_analyse="2026-10-14",
+        duree=1.0,
+        fichiers=fichiers,
+        fichiers_echec=[],
+    )
+
+    json_resultat = vers_json(resultat)
+
+    assert '"chemin": "été.php"' in json_resultat
+
+    import json
+
+    donnees = json.loads(json_resultat)
+
+    assert set(donnees["fichiers"][0].keys()) == {
+        "chemin",
+        "nb_lignes",
+        "fonctions",
+        "complexite_totale",
+        "churn",
+        "score_hotspot",
+        "dependances",
+    }
