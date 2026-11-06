@@ -14,7 +14,7 @@ DEFAULT_MOTIFS = [
 
 
 def _construire(lignes: list[str]) -> PathSpec:
-    return PathSpec.from_lines("gitwildmatch", lignes)
+    return PathSpec.from_lines("gitignore", lignes)
 
 
 def est_exclu(spec: PathSpec, chemin_relatif: str) -> bool:

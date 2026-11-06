@@ -14,10 +14,6 @@ chemins = [
 churn_dict = churn(str(racine))
 
 for relatif in chemins:
-    resultat = _analyser_fichier(
-        racine / relatif,
-        racine,
-        churn_dict,
-    )
-
+    chemin = racine / relatif
+    resultat, infos = _analyser_fichier(chemin, racine, churn_dict)
     print(f"{relatif} : {resultat.nb_lignes} lignes")

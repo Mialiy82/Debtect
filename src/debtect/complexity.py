@@ -2,6 +2,7 @@
 
 from debtect.models import FunctionInfo
 from tree_sitter import Node
+from debtect.ast_utils import parcourir
 
 NOEUD_FUNCTION = {"function_definition", "method_declaration"}
 NOEUD_DECISION = {
@@ -18,21 +19,21 @@ NOEUD_DECISION = {
 }
 
 
-def _parcourir(noeud: Node):
-    pile = [noeud]
-    while pile:
-        courant = pile.pop()
-        yield courant
-        pile.extend(reversed(courant.children))
+# def _parcourir(noeud: Node):
+#     pile = [noeud]
+#     while pile:
+#         courant = pile.pop()
+#         yield courant
+#         pile.extend(reversed(courant.children))
 
 
 def _compter(noeud: Node) -> int:
-    return sum(1 for x in _parcourir(noeud) if x.type in NOEUD_DECISION)
+    return sum(1 for x in parcourir(noeud) if x.type in NOEUD_DECISION)
 
 
 def calculer(ast) -> list[FunctionInfo]:
     resultats = []
-    for noeud in _parcourir(ast):
+    for noeud in parcourir(ast):
         if noeud.type not in NOEUD_FUNCTION:
             continue
 

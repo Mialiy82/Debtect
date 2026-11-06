@@ -29,3 +29,10 @@ class AnalysisResult:
     duree: float
     fichiers: list[FileAnalysis]
     fichiers_echec: list[str]
+
+@dataclass
+class InfoDependances:
+    espace_de_noms: str
+    declarations: list[str]
+    imports: dict[str, str]
+    references: list[str]
