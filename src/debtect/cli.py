@@ -19,9 +19,10 @@ from debtect.complexity import calculer
 from debtect.hotspot import score
 from debtect.models import FileAnalysis, InfoDependances
 from debtect.parser import parser, ErreurParsing
-from debtect.git_miner import churn, ErreurGit
+from debtect.git_miner import churn, commits, ErreurGit
 from debtect.report import construire, vers_json
 from debtect.dependency_graph import extraire, resoudre, impact, ErreurImpact
+from debtect.coupling import calculer_couplages, croiser
 
 
 def _signaler_erreur_parcours(erreur: OSError) -> None:
@@ -139,6 +140,21 @@ def _analyser(args) -> int:
         for analyse in analyses
     ]
 
+    fichiers_connus = {analyse.chemin for analyse in analyses}
+
+    try:
+        historique = commits(str(racine))
+    except ErreurGit as erreur:
+        print(f"Erreur Git : {erreur}", file=sys.stderr)
+        return 1
+
+    couplages_bruts = calculer_couplages(
+        historique,
+        fichiers_connus,
+    )
+
+    couplages = croiser(couplages_bruts, graphe)
+
     duree = time.perf_counter() - debut
     date_analyse = datetime.now().isoformat(timespec="seconds")
 
@@ -148,6 +164,7 @@ def _analyser(args) -> int:
         duree=duree,
         fichiers=analyses,
         fichiers_echec=fichiers_echec,
+        couplages=couplages,
     )
 
     chemin_sortie = Path(args.sortie)
@@ -157,8 +174,15 @@ def _analyser(args) -> int:
         print(f"Erreur lors de l'écriture du rapport : {erreur}", file=sys.stderr)
         return 1
 
+    couplages_caches = [
+        c for c in resultat.couplages
+        if not c.lien_statique
+    ]
+
     print(f"Fichiers PHP découverts : {len(fichiers)}")
     print(f"Fichiers analysés avec succès : {len(analyses)}")
+    print(f"Couplages temporels : {len(resultat.couplages)}")
+    print(f"Couplages cachés : {len(couplages_caches)}")
     print(f"Fichiers en échec : {len(fichiers_echec)}")
     print(f"Durée : {duree:.2f} secondes")
     print(f"Rapport JSON : {chemin_sortie.resolve()}")
@@ -174,6 +198,17 @@ def _analyser(args) -> int:
             f"{fichier.chemin} | complexité={fichier.complexite_totale} "
             f"| churn={fichier.churn} | score={fichier.score_hotspot}"
         )
+
+    print("\nTop 5 des couplages cachés :")
+    if couplages_caches:
+        for couplage in couplages_caches[:5]:
+            print(
+                f"{couplage.fichier_a} <-> {couplage.fichier_b} "
+                f"| {couplage.commits_communs} commits communs "
+                f"| degré : {couplage.degre:.2f}"
+            )
+    else:
+        print("  Aucun couplage caché détecté.")
 
     return 0
 
@@ -227,11 +262,11 @@ def _impact(args) -> int:
         print(f"\nNiveau {niveau} :")
 
         affiches = fichiers_niveau if args.tout else fichiers_niveau[:10]
-        
+
         for chemin in affiches:
             score_fichier = fichiers[chemin]["score_hotspot"]
             print(f"  {chemin} | score={score_fichier}")
-        
+
         if not args.tout and len(fichiers_niveau) > 10:
             print(f"  ... et {len(fichiers_niveau) - 10} autres fichiers")
 

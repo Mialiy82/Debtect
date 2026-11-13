@@ -12,6 +12,14 @@ class FunctionInfo:
 
 
 @dataclass
+class Couplage:
+    fichier_a: str
+    fichier_b: str
+    commits_communs: int
+    degre: float
+    lien_statique: bool
+
+@dataclass
 class FileAnalysis:
     chemin: str
     nb_lignes: int
@@ -29,6 +37,7 @@ class AnalysisResult:
     duree: float
     fichiers: list[FileAnalysis]
     fichiers_echec: list[str]
+    couplages: list[Couplage]
 
 @dataclass
 class InfoDependances:

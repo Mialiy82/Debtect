@@ -2,7 +2,7 @@ import subprocess
 
 import pytest
 
-from debtect.git_miner import _compter, churn, ErreurGit
+from debtect.git_miner import _compter, churn, ErreurGit, commits, creer_depot_git, creer_commit
 
 
 def test_compter_churn():
@@ -95,3 +95,30 @@ def test_churn_depot_avec_commit(tmp_path):
     resultat = churn(str(tmp_path))
 
     assert resultat == {"User.php": 1}
+
+def test_commits_depot_avec_commits(tmp_path):
+    chemin = tmp_path
+    creer_depot_git(chemin)
+
+    (chemin / "a.php").write_text("<?php", encoding="utf-8")
+    (chemin / "b.php").write_text("<?php", encoding="utf-8")
+    creer_commit(chemin)
+
+    (chemin / "c.php").write_text("<?php", encoding="utf-8")
+    creer_commit(chemin)
+
+    resultat = commits(str(chemin))
+
+    assert resultat == [
+        ["c.php"],
+        ["a.php", "b.php"],
+    ]
+
+def test_commits_chemin_inexistant(tmp_path):
+    with pytest.raises(ErreurGit):
+        commits(str(tmp_path / "inexistant"))
+
+
+def test_commits_dossier_non_git(tmp_path):
+    with pytest.raises(ErreurGit):
+        commits(str(tmp_path))
